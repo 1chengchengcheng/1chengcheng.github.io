@@ -1,0 +1,323 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>  Spark HA &amp; Yarn 配置 -    white</title>
+  <meta name="description" content="A minimalist theme for hexo.">
+  <!-- 标签页图标 -->
+  
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  
+
+  <!-- 图标库 -->
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@2.2.0/fonts/remixicon.css" rel="stylesheet">
+
+  <!-- css文件 -->
+  
+<link rel="stylesheet" href="/css/white.css">
+
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;300;400;700;900&family=Roboto+Mono&display=swap" rel="stylesheet">
+
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+
+<div class="menu-outer">
+    <div class="menu-inner">
+        <div class="menu-site-name">
+            <a href="/">
+                white
+            </a>
+        </div>
+        <div class="menu-group">
+            <ul class="menu-ul">
+                
+                <a href="/" class="nav-link">
+                    <li class="menu-li">
+                        首页
+                    </li>
+                </a>
+                
+                <a href="/about" class="nav-link">
+                    <li class="menu-li">
+                        关于
+                    </li>
+                </a>
+                
+                <li class="menu-li" id="mobile-menu">
+                    <i class="ri-menu-line"></i>
+                </li>
+<!--                <li class="menu-li" id="theme-change-btn">-->
+<!--                    默认-->
+<!--                </li>-->
+
+            </ul>
+
+        </div>
+
+    </div>
+</div>
+<!--移动端-->
+<div id="mobile-main">
+    <div class="mobile-menu-inner">
+        <div class="mobile-menu-site-name">
+            <a href="/">
+                white
+            </a>
+        </div>
+        <div class="mobile-menu-group" id="mobile-close">
+            <i class="ri-close-line"></i>
+        </div>
+
+    </div>
+
+    <div class="mobile-menu-div">
+        
+        <a href="/" class="mobile-nav-link">
+            <div class="mobile-menu-child">
+                <span>首页</span>
+            </div>
+        </a>
+        
+        <a href="/about" class="mobile-nav-link">
+            <div class="mobile-menu-child">
+                <span>关于</span>
+            </div>
+        </a>
+        
+    </div>
+
+
+</div>
+
+<div class="body-outer">
+  <div class="body-inner">
+    <article class="post-inner">
+  <div class="post-content-outer">
+    <div class="post-intro">
+      
+      <div class="post-title">
+        Spark HA &amp; Yarn 配置
+      </div>
+      <div class="post-meta">
+        <img src="https://cdn.jsdelivr.net/gh/fushaolei/img/20200524104925.jpg">
+        <div class="post-meta-name">fushaolei</div>
+        <div class="post-meta-date">发布于 2024/06/05</div>
+      </div>
+    </div>
+    <div class="post-content-inner common-typographic">
+      <div class="post-placeholder"></div>
+      <div class="post-content-main">
+        <div class="post-content">
+          <h1 id="Spark-HA-Yarn-配置"><a href="#Spark-HA-Yarn-配置" class="headerlink" title="Spark HA &amp; Yarn 配置"></a>Spark HA &amp; Yarn 配置</h1><h2 id="1-安装前说明"><a href="#1-安装前说明" class="headerlink" title="1.安装前说明"></a>1.安装前说明</h2><p>提供已编译后的cdh版本的spark<br>博主的虚拟机的三个节点为 hadoop01,hadoop02,hadoop03<br>安装spark的目录为 &#x2F;export&#x2F;install&#x2F;<br>上传解压包的路径为 &#x2F;export&#x2F;soft&#x2F;spark-2.2.0-bin-2.6.0-cdh5.14.0.tgz</p>
+<h2 id="2-配置spark"><a href="#2-配置spark" class="headerlink" title="2.配置spark"></a>2.配置spark</h2><h2 id="3-上传解压"><a href="#3-上传解压" class="headerlink" title="3.上传解压"></a>3.上传解压</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd /export/soft</span><br><span class="line">tar -zxvf spark-2.2.0-bin-2.6.0-cdh5.14.0.tgz -C ../install</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="4-配置环境变量"><a href="#4-配置环境变量" class="headerlink" title="4.配置环境变量"></a>4.配置环境变量</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">// 1. 在 /etc/profile.d 目录下创建一个spark.sh 文件用来配置环境变量</span><br><span class="line">cd /etc/profile.d</span><br><span class="line">vim spark.sh</span><br><span class="line">//2. 在 spark.sh 文件中添加如下内容(路径改为自己的)</span><br><span class="line">//也可以直接在/etc/profile文件中添加(不建议):</span><br><span class="line">export SPARK_HOME=/export/install/spark-2.2.0-bin-2.6.0-cdh5.14.0</span><br><span class="line">export PATH=$PATH:$SPARK_HOME/bin</span><br><span class="line">// 保存退出然后分配到其它节点</span><br><span class="line">scp  spark.sh hadoop02:$PWD</span><br><span class="line">scp spark.sh hadoop03:$PWD</span><br><span class="line">//刷新环境变量(每个节点都要执行)</span><br><span class="line">source /etc/profile</span><br></pre></td></tr></table></figure>
+
+
+
+<p>注意: 配置完之后 hadoop&#x2F;sbin 的目录和 spark&#x2F;sbin 可能会有命令冲突</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">冲突的命令:</span><br><span class="line">start-all.sh </span><br><span class="line">stop-all.sh</span><br><span class="line">解决方案(建议用第二种):</span><br><span class="line">1.把其中一个框架的 sbin 从环境变量中去掉；</span><br><span class="line">2.改名 hadoop/sbin/start-all.sh 改为: start-all-hadoop.sh</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="1-修改spark-的-配置"><a href="#1-修改spark-的-配置" class="headerlink" title="(1) 修改spark 的 配置"></a>(1) 修改spark 的 配置</h3><h4 id="1-修改-spark-env-sh-文件"><a href="#1-修改-spark-env-sh-文件" class="headerlink" title="1.修改 spark-env.sh 文件"></a>1.修改 spark-env.sh 文件</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//进入spark 配置目录</span><br><span class="line">cd $SPARK_HOME/conf</span><br><span class="line">//拷贝 spark-env.sh.template 文件</span><br><span class="line">cp spark-env.sh.template spark-env.sh</span><br><span class="line">//打开 spark-env.sh 文件</span><br><span class="line">vim spark-env.sh</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-在spark-env-sh文件中添加如下内容"><a href="#2-在spark-env-sh文件中添加如下内容" class="headerlink" title="2.在spark-env.sh文件中添加如下内容"></a>2.在spark-env.sh文件中添加如下内容</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#配置java环境变量</span><br><span class="line">export JAVA_HOME=$&#123;JAVA_HOME&#125;</span><br><span class="line">#指定spark Master的IP </span><br><span class="line">export SPARK_MASTER_HOST=hadoop01</span><br><span class="line">#指定spark Master的端口</span><br><span class="line">export SPARK_MASTER_PORT=7077</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-修改slaves-文件"><a href="#3-修改slaves-文件" class="headerlink" title="3.修改slaves 文件"></a>3.修改slaves 文件</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//拷贝  spark-env.sh.template 文件</span><br><span class="line">cp slaves.template slaves</span><br><span class="line">//删除 localhost</span><br><span class="line">localhost</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-在slaves-文件中添加要工作的节点-IP地址"><a href="#4-在slaves-文件中添加要工作的节点-IP地址" class="headerlink" title="4.在slaves 文件中添加要工作的节点(IP地址)"></a>4.在slaves 文件中添加要工作的节点(IP地址)</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hadoop01</span><br><span class="line">hadoop02</span><br><span class="line">hadoop03</span><br></pre></td></tr></table></figure>
+
+<h4 id="5-分发到其它节点-hadoop01执行"><a href="#5-分发到其它节点-hadoop01执行" class="headerlink" title="5.分发到其它节点(hadoop01执行)"></a>5.分发到其它节点(hadoop01执行)</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd /export/install</span><br><span class="line">scp -r  spark-2.2.0-bin-2.6.0-cdh5.14.0 hadoop02:$PWD</span><br><span class="line">scp -r  spark-2.2.0-bin-2.6.0-cdh5.14.0 hadoop03:$PWD</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="6-启动-和-关闭-spark-集群"><a href="#6-启动-和-关闭-spark-集群" class="headerlink" title="6.启动 和 关闭 spark 集群"></a>6.启动 和 关闭 spark 集群</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cd $SPARK_HOME/sbin</span><br><span class="line">//启动</span><br><span class="line">./start-all.sh</span><br><span class="line">//关闭</span><br><span class="line">./stop-all.sh</span><br></pre></td></tr></table></figure>
+
+<h4 id="7-查看web界面"><a href="#7-查看web界面" class="headerlink" title="7.查看web界面"></a>7.查看web界面</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//浏览器访问如下路径:</span><br><span class="line">http://hadoop01:8080</span><br><span class="line">//或者</span><br><span class="line">http://192.168.100.100:8080</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-测试"><a href="#5-测试" class="headerlink" title="5.测试"></a>5.测试</h2><h4 id="1-创建words-文件-博主实在opt目录下创建的"><a href="#1-创建words-文件-博主实在opt目录下创建的" class="headerlink" title="1.创建words 文件(博主实在opt目录下创建的)"></a>1.创建words 文件(博主实在opt目录下创建的)</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">//创建</span><br><span class="line">cd /opt</span><br><span class="line">vim  words.txt</span><br><span class="line">//上传到hadoop集群</span><br><span class="line">hadoop fs -put /aaa/exercise01/</span><br><span class="line">//添加以下内容</span><br><span class="line">hello me you her </span><br><span class="line">hello you her</span><br><span class="line">hello her </span><br><span class="line">hello </span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="2-集群模式启动spark-shell"><a href="#2-集群模式启动spark-shell" class="headerlink" title="2.集群模式启动spark-shell"></a>2.集群模式启动spark-shell</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$SPARK_HOME/bin/spark-shell --master spark://hadoop01:7077</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-运行程序"><a href="#3-运行程序" class="headerlink" title="3.运行程序"></a>3.运行程序</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">运行的结果会生成到 /opt/output目录</span><br><span class="line">sc.textFile(&quot;hdfs://hadoop01:8020/aaa/exercise01/words.txt&quot;).flatMap(_.split(&quot; &quot;)).map((_, 1)).reduceByKey(_ + _).saveAsTextFile(&quot;hdfs://hadoop01:8020/aaa/exercise01/output&quot;)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>查看运行结果 1</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hadoop fs -ll /aaa/exercise01/output</span><br></pre></td></tr></table></figure>
+
+<p>查看运行结果 2</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hadoop fs -cat /aaa/exercise01/output/part-00000</span><br><span class="line">hadoop fs -cat /aaa/exercise01/output/part-00001</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置Spark-HA-必须有一个zookeeper集群-参考之前的spark全流程配置里的zookeeper"><a href="#配置Spark-HA-必须有一个zookeeper集群-参考之前的spark全流程配置里的zookeeper" class="headerlink" title="配置Spark HA (必须有一个zookeeper集群)(参考之前的spark全流程配置里的zookeeper)"></a>配置Spark HA (必须有一个zookeeper集群)(参考之前的spark全流程配置里的zookeeper)</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">zookeeper 的安装及 启动和关闭脚本</span><br><span class="line"></span><br><span class="line">1.停止spark 集群</span><br><span class="line">$SPARK_HOME/sbin/stop-all.sh</span><br><span class="line">2.修改改配置</span><br><span class="line">1.修改spark-env.sh文件</span><br><span class="line">//进入 spark 配置文件目录</span><br><span class="line">cd $SPARK_HOME/conf</span><br><span class="line">//打开 spark-env.sh文件</span><br><span class="line">vim spark-env.sh</span><br><span class="line">//注释掉 Master配置</span><br><span class="line"># export SPARK_MASTER_HOST=hadoop01</span><br><span class="line">//添加SPARK_DAEMON_JAVA_OPTS,内容如下:</span><br><span class="line">export SPARK_DAEMON_JAVA_OPTS=&quot;-Dspark.deploy.recoveryMode=ZOOKEEPER  -Dspark.deploy.zookeeper.url=hadoop01:2181,hadoop02:2181,hadoop03:2181  -Dspark.deploy.zookeeper.dir=/spark&quot;</span><br><span class="line">//保存退出</span><br><span class="line">:wq</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-分发到其它节点"><a href="#1-分发到其它节点" class="headerlink" title="1.分发到其它节点"></a>1.分发到其它节点</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scp spark-env.sh hadoop02:$PWD</span><br><span class="line">scp spark-env.sh hadoop03:$PWD</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-测试"><a href="#2-测试" class="headerlink" title="2.测试"></a>2.测试</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">zkstart-all.sh</span><br><span class="line">没有的话可以使用 zkServer.sh start 命令启动</span><br><span class="line">没有脚本可以配置参考链接:</span><br><span class="line">https://blog.csdn.net/hongchenshijie/category_9453806.html</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-启动spark-集群"><a href="#3-启动spark-集群" class="headerlink" title="3.启动spark 集群"></a>3.启动spark 集群</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">// 启动spark (节点一运行)</span><br><span class="line">$SPARK_HOME/sbin/start-all.sh</span><br><span class="line">//在节点二单独只启动个master</span><br><span class="line">$SPARK_HOME/sbin/start-master.sh</span><br><span class="line">注意</span><br><span class="line">在普通模式下启动spark集群</span><br><span class="line">只需要在主节点上执行start-all.sh 就可以了</span><br><span class="line"></span><br><span class="line">在高可用模式下启动spark集群</span><br><span class="line">先需要在任意一台主节点上执行start-all.sh</span><br><span class="line">然后在另外一台主节点上单独执行start-master.sh</span><br><span class="line"></span><br><span class="line">查看hadoop01和hadoop02</span><br><span class="line">进入web,界面查看状态可以观察到有一台状态为StandBy</span><br><span class="line"></span><br><span class="line">http://hadoop01:8080/</span><br><span class="line">http://hadoop02:8080/</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>
+        <span class="lazyload-img-span">
+        <img   
+           data-src="C:\Users\LENOVO\AppData\Roaming\Typora\typora-user-images\image-20240605092507504.png" class="lazyload-img">
+        </sapn>
+      </p>
+<p>
+        <span class="lazyload-img-span">
+        <img   
+           data-src="C:\Users\LENOVO\AppData\Roaming\Typora\typora-user-images\image-20240605092522766.png" class="lazyload-img">
+        </sapn>
+      </p>
+<h4 id="4-先使用jps查看-master-进程-id"><a href="#4-先使用jps查看-master-进程-id" class="headerlink" title="4.先使用jps查看 master 进程 id"></a>4.先使用jps查看 master 进程 id</h4><p>
+        <span class="lazyload-img-span">
+        <img   
+           data-src="C:\Users\LENOVO\AppData\Roaming\Typora\typora-user-images\image-20240605092557524.png" class="lazyload-img">
+        </sapn>
+      </p>
+<h4 id="5-使用kill-9-杀死master进程"><a href="#5-使用kill-9-杀死master进程" class="headerlink" title="5.使用kill -9 杀死master进程"></a>5.使用kill -9 杀死master进程</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kill -9 4781</span><br></pre></td></tr></table></figure>
+
+<h4 id="6-然后重新启动节点一的master"><a href="#6-然后重新启动节点一的master" class="headerlink" title="6.然后重新启动节点一的master"></a>6.然后重新启动节点一的master</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$SPARK_HOME/sbin/start-master.sh</span><br></pre></td></tr></table></figure>
+
+<h4 id="7-刷新后再次查看web界面"><a href="#7-刷新后再次查看web界面" class="headerlink" title="7.刷新后再次查看web界面"></a>7.刷新后再次查看web界面</h4><p>可以看到节点一的状态编程 standBy 了,节点二的状态变成了alive,这就说明配置成功了</p>
+<p>
+        <span class="lazyload-img-span">
+        <img   
+           data-src="C:\Users\LENOVO\AppData\Roaming\Typora\typora-user-images\image-20240605092844494.png" class="lazyload-img">
+        </sapn>
+      </p>
+<h2 id="on-yarn-模式"><a href="#on-yarn-模式" class="headerlink" title="on yarn 模式"></a>on yarn 模式</h2><p>官方文档<br><code>http://spark.apache.org/docs/latest/running-on-yarn.html</code></p>
+<h4 id="1-安装启动Hadoop-需要使用HDFS和YARN，已经ok"><a href="#1-安装启动Hadoop-需要使用HDFS和YARN，已经ok" class="headerlink" title="1.安装启动Hadoop(需要使用HDFS和YARN，已经ok)"></a>1.安装启动Hadoop(需要使用HDFS和YARN，已经ok)</h4><h4 id="2-修改配置"><a href="#2-修改配置" class="headerlink" title="2.修改配置"></a>2.修改配置</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">在spark-env.sh ，添加HADOOP_CONF_DIR配置，指明了hadoop的配置文件的位置</span><br><span class="line"></span><br><span class="line">//打开配置文件</span><br><span class="line">cd $SPARK_HOME/conf</span><br><span class="line">vim spark-env.sh</span><br><span class="line">//添加如下配置</span><br><span class="line">export HADOOP_CONF_DIR=$&#123;HADOOP_HOME&#125;/etc/hadoop</span><br><span class="line">//分发到其它节点(可以不分发)</span><br><span class="line">scp spark-env.sh hadoop02:$PWD</span><br><span class="line">scp spark-env.sh hadoop03:$PWD</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-提交任务到yarn"><a href="#3-提交任务到yarn" class="headerlink" title="3.提交任务到yarn"></a>3.提交任务到yarn</h4><p>先进入 <a target="_blank" rel="noopener" href="http://hadoop01:8088/">http://hadoop01:8088</a> yarn页面<br>提交一下命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$SPARK_HOME/bin/spark-submit \</span><br><span class="line">--class org.apache.spark.examples.SparkPi \</span><br><span class="line">--master yarn \</span><br><span class="line">--deploy-mode client \</span><br><span class="line">--driver-memory 1g \</span><br><span class="line">--executor-memory 1g \</span><br><span class="line">--executor-cores 2 \</span><br><span class="line">--queue default \</span><br><span class="line">$SPARK_HOME/examples/jars/spark-examples_2.11-2.2.0.jar \</span><br></pre></td></tr></table></figure>
+
+
+<p>刷新后看到任务就说明配置成功了<br>
+        <span class="lazyload-img-span">
+        <img   
+           data-src="C:\Users\LENOVO\AppData\Roaming\Typora\typora-user-images\image-20240605093049441.png" class="lazyload-img">
+        </sapn>
+      </p>
+
+        </div>
+      </div>
+      <div class="post-placeholder post-toc-container">
+        <!-- toc -->
+        
+          <!-- tocbot -->
+<nav class="post-toc toc"></nav>
+
+        
+      </div>
+   </div>
+
+    <!-- 评论 -->
+    
+    <div class="bottom-comments-outer">
+      <div class="bottom-comments-inner common-typographic">
+        <h2 class="comment-title">评论</h2>
+        <!-- valine -->
+        
+        <!-- Gitalk -->
+        
+        <!-- livere -->
+        
+        
+        </div>
+      </div>
+    
+  </div>
+</article>
+<!-- tocbot begin -->
+
+<script src="/lib/tocbot/tocbot.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        tocbot.init({
+            // Where to render the table of contents.
+            tocSelector: '.post-toc',
+            // Where to grab the headings to build the table of contents.
+            contentSelector: '.post-content',
+            // Which headings to grab inside of the contentSelector element.
+            headingSelector: 'h1, h2, h3',
+            // For headings inside relative or absolute positioned containers within content.
+            hasInnerContainers: true,
+        });
+    });
+
+</script>
+<!-- tocbot end -->
+
+  </div>
+</div>
+
+<!-- 如果是home模式的话，不在首页就显示footer，如果不是home模式的话 所有都显示footer -->
+
+  <div class="footer-outer animate__animated  animate__fadeInUp">
+    <div class="footer-inner">
+        <div class="footer-text">
+            <p>Power by <a target="_blank" rel="noopener" href="http://hexo.io/">Hexo</a> Theme by <a target="_blank" rel="noopener" href="https://github.com/FuShaoLei/hexo-theme-white">White</a></p>
+
+        </div>
+        <div class="footer-contact">
+            <ul class="footer-ul">
+                
+                <li class="footer-li">
+                    <a href="https://github.com/FuShaoLei/hexo-theme-white" target="_blank">
+                        <i class="ri-github-line"></i>
+                    </a>
+                </li>
+                
+                <li class="footer-li">
+                    <a href="mailto:1563250958@qq.com" target="_blank">
+                        <i class="ri-mail-line"></i>
+                    </a>
+                </li>
+                
+                <li class="footer-li">
+                    <a href="https://music.163.com/" target="_blank">
+                        <i class="ri-netease-cloud-music-line"></i>
+                    </a>
+                </li>
+                
+                <li class="footer-li">
+                    <a href="https://bilibili.com/" target="_blank">
+                        <i class="ri-bilibili-line"></i>
+                    </a>
+                </li>
+                
+                <li class="footer-li">
+                    <a href="https://youtube.com/" target="_blank">
+                        <i class="ri-youtube-line"></i>
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<script src="/js/white.js"></script>
+
+
+
+</body>
+</html>
